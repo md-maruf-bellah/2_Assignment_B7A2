@@ -4,4 +4,5 @@ export interface IIssues {
   description: string;
   type: string;
   status: string;
+  sort: string;
 }

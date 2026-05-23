@@ -3,7 +3,7 @@ import type { TIssueQuery } from "../../types";
 import type { IIssues } from "./issues.interface";
 
 const createIssuesIntoDB = async (payload: IIssues) => {
-  const { reporter_id, title, description, type, status } = payload;
+  const { reporter_id, title, description, type, status, sort } = payload;
 
   const user = await pool.query(
     `
@@ -12,17 +12,15 @@ const createIssuesIntoDB = async (payload: IIssues) => {
     [reporter_id],
   );
 
-  console.log("user", payload);
-
   if (user.rows.length === 0) {
     throw new Error("User not exists!");
   }
   const result = await pool.query(
     `
-    INSERT INTO issues (reporter_id, title, description, type, status) VALUES($1, $2, $3, $4,  COALESCE($5, 'open')) RETURNING*
+    INSERT INTO issues (reporter_id, title, description, type, status , sort) VALUES($1, $2, $3, $4,$5, COALESCE($6, 'newest')) RETURNING*
     
     `,
-    [reporter_id, title, description, type, status],
+    [reporter_id, title, description, type, status, sort],
   );
 
   return result.rows[0];
@@ -45,17 +43,23 @@ const getAllIssuesFromDB = async (query: TIssueQuery) => {
     conditions.push(`status=$${values.length}`);
   }
 
+  // srot filter
+  if (query.sort) {
+    values.push(query.sort);
+    conditions.push(`sort=$${values.length}`);
+  }
+
   //where add
   if (conditions.length > 0) {
     sql += ` WHERE ${conditions.join(" AND ")}`;
   }
 
   //sorting
-  if (query.sort === "oldest") {
-    sql += ` ORDER BY created_at ASC`;
-  } else {
-    sql += ` ORDER BY created_at DESC`;
-  }
+  // if (query.sort === "oldest") {
+  //   sql += ` ORDER BY created_at ASC`;
+  // } else {
+  //   sql += ` ORDER BY created_at DESC`;
+  // }
 
   // get issues
   const issuesResult = await pool.query(sql, values);
@@ -87,6 +91,7 @@ const getAllIssuesFromDB = async (query: TIssueQuery) => {
       description: issue.description,
       type: issue.type,
       status: issue.status,
+      sort: issue.sort,
 
       reporter: reporter
         ? {
@@ -136,6 +141,7 @@ const getIssueByIdFromDB = async (id: string) => {
       description: issue.description,
       type: issue.type,
       status: issue.status,
+      sort: issue.sort,
 
       reporter: reporter
         ? {
@@ -153,12 +159,12 @@ const getIssueByIdFromDB = async (id: string) => {
 };
 
 const updateIssueByIdIntoDB = async (id: string, payload: any) => {
-  const { title, description, type, status } = payload;
+  const { title, description, type, status, sort } = payload;
   const result = await pool.query(
     `
-    UPDATE issues SET title=$1, description=$2, type=$3, status=$4, updated_at=NOW() WHERE id=$5 RETURNING*
+    UPDATE issues SET title=$1, description=$2, type=$3, status=$4,sort=$5, updated_at=NOW() WHERE id=$6 RETURNING*
     `,
-    [title, description, type, status, id],
+    [title, description, type, status, sort, id],
   );
   return result.rows[0];
 };

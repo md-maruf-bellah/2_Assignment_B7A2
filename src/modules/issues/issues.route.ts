@@ -10,16 +10,8 @@ router.post(
   auth(USER_ROLE.maintainer, USER_ROLE.contributor),
   issuesController.createIssues,
 );
-router.get(
-  "/",
-  auth(USER_ROLE.maintainer, USER_ROLE.contributor),
-  issuesController.getAllIssues,
-);
-router.get(
-  "/:id",
-  auth(USER_ROLE.maintainer, USER_ROLE.contributor),
-  issuesController.getIssuesById,
-);
+router.get("/", issuesController.getAllIssues);
+router.get("/:id", issuesController.getIssuesById);
 router.put(
   "/:id",
   auth(USER_ROLE.maintainer),
