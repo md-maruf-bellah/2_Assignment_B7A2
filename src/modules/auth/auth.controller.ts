@@ -1,64 +1,48 @@
 import type { Request, Response } from "express";
 import { authService } from "./auth.service";
-
-const loginUser = async (req: Request, res: Response) => {
-  try {
-    const result = await authService.loginUserIntoDB(req.body);
-
-    // const { refreshToken } = result;
-
-    // res.cookie("refreshToken", refreshToken, {
-    //   secure: false,
-    //   httpOnly: true,
-    //   sameSite: "lax",
-    // });
-    res.status(200).json({
-      success: true,
-      message: "User login successfully",
-      data: result,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-      data: error,
-    });
-  }
-};
+import sendResponse from "../../utility/sendResponse";
 
 const signUpUser = async (req: Request, res: Response) => {
   const result = await authService.signUpUserIntoDB(req.body);
 
   try {
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 201,
       success: true,
       message: "User SignUp successfully",
       data: result,
     });
-  } catch (error: any) {
-    res.status(500).json({
+  } catch (error: unknown) {
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
-      message: error.message,
-      data: error,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong in Login",
+      error: error,
     });
   }
 };
 
-const refreshToken = async (req: Request, res: Response) => {
+const loginUser = async (req: Request, res: Response) => {
   try {
-    const result = await authService.generateRefreshToken(
-      req.cookies.refreshToken,
-    );
+    const result = await authService.loginUserIntoDB(req.body);
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 201,
       success: true,
-      message: "Acess token generated!",
+      message: "User login successfully",
       data: result,
     });
-  } catch (error: any) {
-    res.status(500).json({
+  } catch (error: unknown) {
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
-      message: error.message,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong in SignUp",
       error: error,
     });
   }
@@ -67,5 +51,4 @@ const refreshToken = async (req: Request, res: Response) => {
 export const authController = {
   loginUser,
   signUpUser,
-  refreshToken,
 };

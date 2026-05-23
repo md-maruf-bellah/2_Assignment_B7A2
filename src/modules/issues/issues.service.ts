@@ -1,7 +1,8 @@
 import { pool } from "../../db";
 import type { TIssueQuery } from "../../types";
+import type { IIssues } from "./issues.interface";
 
-const createIssuesIntoDB = async (payload: any) => {
+const createIssuesIntoDB = async (payload: IIssues) => {
   const { reporter_id, title, description, type, status } = payload;
 
   const user = await pool.query(

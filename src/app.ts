@@ -16,9 +16,7 @@ app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/refresh-token", authRouter);
-app.use("/api/login", authRouter);
-app.use("/api/signup", authRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/issues", issuesRouter);
 
