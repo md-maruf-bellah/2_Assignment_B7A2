@@ -20,7 +20,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/issues", issuesRouter);
-
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({
+    message: "Welcome to Assignment @",
+    status: true,
+    data: {
+      name: "Maruf Bellah",
+      email: "maruf@gmail.com",
+    },
+  });
+});
 // Global Error Handling Middleware
 app.use(globalErrorHandler);
 
