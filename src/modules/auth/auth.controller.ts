@@ -9,7 +9,7 @@ const signUpUser = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "User SignUp successfully",
+      message: "User registered successfully",
       data: result,
     });
   } catch (error: unknown) {
@@ -32,7 +32,7 @@ const loginUser = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "User login successfully",
+      message: "Login successful",
       data: result,
     });
   } catch (error: unknown) {
