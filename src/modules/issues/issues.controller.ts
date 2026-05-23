@@ -94,7 +94,7 @@ const updateIssueById = async (req: Request, res: Response) => {
     );
 
     if (!result) {
-      sendResponse(res, {
+      return sendResponse(res, {
         statusCode: 404,
         success: false,
         message: "Issue not found",
